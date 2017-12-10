@@ -1,2 +1,2 @@
-# tensorflow-data-examples
-A few examples on using the `tf.data` module of Tensorflow
+# tensorflow-datasets-api-examples
+A few examples on using the Datasets API (`tf.data`) of Tensorflow
