@@ -36,32 +36,32 @@ def generator(items):
     for item in zip(*items):
         yield item
 
+def make_synthetic_batched_data(n_items, batch_size, seq_len, n_dims):
+    """Create a synthetic dataset."""
+
+    def pad_and_batch(data, seq_len, batch_size):
+        """Batch unbatched sequence data."""
+
+        def _pad(seq, n_zero):
+            """Pad a vector sequence with n zero-vectors."""
+            return np.concatenate((seq, np.zeros((n_zero, seq.shape[-1]))), axis=0)
+
+        ins, outs, lens = data
+        pad_ins = [_pad(ins[i], seq_len-lens[i]) for i in xrange(len(ins))]
+        pad_outs = [_pad(outs[i], seq_len-lens[i]) for i in xrange(len(outs))]
+
+        return ([np.stack(pad_ins[i:min(i+batch_size, len(pad_ins))])
+                 for i in xrange(0, len(pad_ins), batch_size)],
+                [np.stack(pad_outs[i:min(i+batch_size, len(pad_outs))])
+                 for i in xrange(0, len(pad_outs), batch_size)],
+                [np.stack(lens[i:min(i+batch_size, len(lens))])
+                 for i in xrange(0, len(lens), batch_size)])
+
+    return pad_and_batch(
+        make_synthetic_unbatched_data(n_items, seq_len, n_dims), seq_len, batch_size)
+
 def batched_generator_dataset(n_items, batch_size, max_seq_len, n_dims):
     """Make a tf.data.Dataset object via a callable Numpy 3D ndarray generator."""
-
-    def make_synthetic_batched_data(n_items, batch_size, seq_len, n_dims):
-        """Create a synthetic dataset."""
-
-        def pad_and_batch(data, seq_len, batch_size):
-            """Batch unbatched sequence data."""
-
-            def _pad(seq, n_zero):
-                """Pad a vector sequence with n zero-vectors."""
-                return np.concatenate((seq, np.zeros((n_zero, seq.shape[-1]))), axis=0)
-
-            ins, outs, lens = data
-            pad_ins = [_pad(ins[i], seq_len-lens[i]) for i in xrange(len(ins))]
-            pad_outs = [_pad(outs[i], seq_len-lens[i]) for i in xrange(len(outs))]
-
-            return ([np.stack(pad_ins[i:min(i+batch_size, len(pad_ins))])
-                     for i in xrange(0, len(pad_ins), batch_size)],
-                    [np.stack(pad_outs[i:min(i+batch_size, len(pad_outs))])
-                     for i in xrange(0, len(pad_outs), batch_size)],
-                    [np.stack(lens[i:min(i+batch_size, len(lens))])
-                     for i in xrange(0, len(lens), batch_size)])
-
-        return pad_and_batch(
-            make_synthetic_unbatched_data(n_items, seq_len, n_dims), seq_len, batch_size)
 
     data = make_synthetic_batched_data(n_items, batch_size, max_seq_len, n_dims)
     return apply_pipeline(

@@ -36,6 +36,5 @@ METHOD = {
 }
 
 if __name__ == '__main__':
-    METHOD_ID, N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS = sys.argv[1:]
-    METHOD[METHOD_ID](int(N_TRAIN), int(N_VALID), int(BATCH_SIZE),
-                      int(MAX_SEQ_LEN), int(N_DIMS))
+    METHOD_ID = sys.argv[1]
+    METHOD[METHOD_ID](N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS)
