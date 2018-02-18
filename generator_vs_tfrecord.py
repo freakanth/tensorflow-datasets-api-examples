@@ -4,9 +4,9 @@ import os
 import sys
 import glob
 
-from constants import N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS
 from data import unbatched_generator_dataset, batched_generator_dataset, tfrecord_dataset
 from model import train_model
+from constants import N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # To reduce exception verbosity
 

@@ -8,6 +8,8 @@ from data import make_synthetic_batched_data, batched_generator_dataset
 from model import build_model
 from constants import BATCH_SIZE, MAX_SEQ_LEN, N_DIMS, N_TRAIN, N_VALID, N_EPOCHS
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # To reduce exception verbosity
+
 def with_placeholders():
     """Train a model with placeholder input."""
 
