@@ -1,14 +1,14 @@
 """Some examples of creating sequence datasets using the Tensorflow Datasets API."""
 
+import os
 import sys
+import glob
 
 from constants import N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS
 from data import unbatched_generator_dataset, batched_generator_dataset, tfrecord_dataset
 from model import train_model
 
-TRAIN_RECORD_NAME = 'training_sequences.tfr'
-VALID_RECORD_NAME = 'validation_sequences.tfr'
-
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' # To reduce exception verbosity
 
 def read_unbatched_ndarrays(n_train, n_valid, batch_size, max_seq_len, n_dims):
     """Training a model with Dataset created using a generator of unbatched data."""
@@ -25,8 +25,9 @@ def read_batched_ndarrays(n_train, n_valid, batch_size, max_seq_len, n_dims):
 def read_unbatched_tfrecord(n_train, n_valid, batch_size, max_seq_len, n_dims):
     """Training a model with Dataset created using a TFRecord file."""
 
-    train_model(tfrecord_dataset(n_train, batch_size, max_seq_len, n_dims, TRAIN_RECORD_NAME),
-                tfrecord_dataset(n_valid, batch_size, max_seq_len, n_dims, VALID_RECORD_NAME))
+    map(os.remove, glob.glob('*.tfr')) #  Remove any existing TFRecord files
+    train_model(tfrecord_dataset(n_train, batch_size, max_seq_len, n_dims),
+                tfrecord_dataset(n_valid, batch_size, max_seq_len, n_dims))
 
 METHOD = {
     '1': read_unbatched_ndarrays,
@@ -35,5 +36,6 @@ METHOD = {
 }
 
 if __name__ == '__main__':
-    METHOD_ID = sys.argv[1]
-    METHOD[METHOD_ID](N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS)
+    METHOD_ID, N_TRAIN, N_VALID, BATCH_SIZE, MAX_SEQ_LEN, N_DIMS = sys.argv[1:]
+    METHOD[METHOD_ID](int(N_TRAIN), int(N_VALID), int(BATCH_SIZE),
+                      int(MAX_SEQ_LEN), int(N_DIMS))
